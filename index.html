@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<script type="text/javascript" src="lib/prototype/prototype.js"></script>
+		<script type="text/javascript" src="lib/showdown/showdown.js"></script>
+		<script type="text/javascript" src="lib/liquid/liquid.js"></script>
+		
+	</head>
+	<body>
+		<div id="content-placeholder">
+		<div>
+	</body>	
+<!-- 
+  White space is the problem... Markdown treats text with 4 or more leading whitespace characters as CODE blocks. HTML will preserve the whitespace from the SCRIPT element. So if you remove the leading spaces here (which, I  know, is ugly) Showdown won't render it with PRE/CODE tags.
+
+  Updated: 
+-->
+	<script type="text/html" id="myOtherTemplate">
+hi {{ current_user }} 
+=====================
+* one
+* two
+	</script>
+	<script type="text/javascript" > 
+	Liquid.readTemplateFile = function (path) {
+		var elem = document.getElementById(path);
+		if(elem) {
+			return elem.innerHTML;
+		} else {
+			return path + " can't be found.";
+		}
+	}
+	var src = "{% include 'myOtherTemplate' with current_user %}";
+
+	var tmpl = Liquid.parse( src );
+	var content = tmpl.render({ current_user: '@Rauhr' });
+	//alert( content );
+	var converter = new Showdown.converter();
+	var html = converter.makeHtml( content );
+	//alert(html);
+	var placeholder = document.getElementById('content-placeholder');
+	placeholder.innerHTML = html;
+	
+	</script>
+
+</html>
