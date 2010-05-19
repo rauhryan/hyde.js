@@ -1,5 +1,10 @@
 <html>
 	<head>
+		<script type="text/javascript" src="lib/jquery/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript">
+			jQuery.noConflict();
+			var $j = jQuery;
+		</script>
 		<script type="text/javascript" src="lib/prototype/prototype.js"></script>
 		<script type="text/javascript" src="lib/showdown/showdown.js"></script>
 		<script type="text/javascript" src="lib/liquid/liquid.js"></script>
@@ -14,21 +19,27 @@
 
   Updated: 
 -->
-	<script type="text/html" id="myOtherTemplate">
-hi {{ current_user }} 
-=====================
-* one
-* two
-	</script>
+<script type="text/html"  id="myOtherTemplate">
+Hi {{current_user}} !
+====================
+</script>
 	<script type="text/javascript" > 
-	Liquid.readTemplateFile = function (path) {
+	/*Liquid.readTemplateFile = function (path) {
 		var elem = document.getElementById(path);
 		if(elem) {
 			return elem.innerHTML;
 		} else {
 			return path + " can't be found.";
 		}
+	}*/
+	Liquid.readTemplateFile = function (path) {
+		var path = "_templates/" +  path + ".markdown";
+		return $j.ajax({
+			url: path,
+			async: false
+		}).responseText;
 	}
+
 	var src = "{% include 'myOtherTemplate' with current_user %}";
 
 	var tmpl = Liquid.parse( src );
