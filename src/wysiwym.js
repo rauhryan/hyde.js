@@ -19,7 +19,7 @@ var Wysiwym = function () {
 
 		var preview = $j('<div class="wysiwym-preview" >');
 		form.append(preview);
-		var panes = {input:textarea[0], preview:preview[0], output:function (output) { alert(output); }};
+		var panes = {input:textarea[0], preview:preview[0], output:null};
 		var previewManager = new Attacklab.wmd.previewManager(panes);
 
 		var editor = new Attacklab.wmd.editor(textarea[0], previewManager.refresh);
@@ -28,20 +28,21 @@ var Wysiwym = function () {
 		return form;				
 	}
 	var createDom = function (rawMarkdown) {
-	    // build the dom elements
-            var form = document.createElement("form");
-	    $j(form).attr('id','wysiwym-form');
-            var textarea = document.createElement("textarea");
-            textarea.value = rawMarkdown;
-	    $j(textarea).addClass('wysiwym-textarea');
-            form.appendChild(textarea);
-    
-            var previewDiv = document.createElement("div");
-	    $j(previewDiv).addClass('wysiwym-preview');
-            form.appendChild(previewDiv);
-        
-           
-	    return $j(form);
+		// build the dom elements
+		var form = document.createElement("form");
+		$j(form).attr('id','wysiwym-form');
+		var textarea = document.createElement("textarea");
+		textarea.value = rawMarkdown;
+   		$j(textarea).addClass('wysiwym-textarea');
+           	form.appendChild(textarea);
+          	 var previewDiv = document.createElement("div");
+	   	$j(previewDiv).addClass('wysiwym-preview');
+           	form.appendChild(previewDiv);
+	    	
+		
+		me.form = $j(form);	
+
+	    	return me.form;
 		
 	}
 	var destroyInstance = function () {
@@ -56,7 +57,27 @@ var Wysiwym = function () {
 	}
 	/* Public so you can override it */
 	this.appendToBody = function (form){
-		$j('body').append(form);
+		$j('body').prepend(form);
+		
+		var button = $j('<a href="#open" class="minibutton" ><span>Open</span></a>');
+		button.bind({
+			focus: function () {		
+				jQuery(this).addClass('mousedown');
+			},
+			blur: function () {
+				jQuery(this).removeClass('mousedown');
+			},
+			mouseup: function () {
+				jQuery(this).removeClass('mousedown');
+			}
+
+		});
+
+		button.click(function () {
+					me.form.toggle();
+				});
+
+		me.form.before(button);
 	}	
 
 	var loadEditor = function (rawMarkdown){
