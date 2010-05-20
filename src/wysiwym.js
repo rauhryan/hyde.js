@@ -140,10 +140,27 @@ jQuery.extend({
 
 		var wireUpEditor = function (element) {
 			// bind to the editor
+			// build the preview manage
+            		var panes = {input:jQuery('.wysiwym-textarea')[0], preview:jQuery('.wysiwym-preview')[0], output:null};
+            		var previewManager = new Attacklab.wmd.previewManager(panes);
+        
+        	   	//  build the editor and tell it to refresh the preview after commands 
+       		     	var editor = new Attacklab.wmd.editor(jQuery('.wysiwym-textarea')[0],previewManager.refresh);
+			this.editor = editor;
+			this.previewManager = previewManager;
+			this.dom = element;
+        	}
+
+		this.destroy = function (){
+			me.editor.destroy();
+			me.previewManager.destroy();
+			me.dom.remove();
 		}
 
 		this.prependTo = function ($element) {
-			$element.prepend(createDom(),wireUpEditor);
+			var dom = createDom();
+			$element.prepend(dom);
+			wireUpEditor(dom);
 		}
 
 	},
@@ -155,6 +172,8 @@ jQuery.extend({
 		this.addListener = function (list) {
 			listeners.push(list);
 		}
+
+		this.converter = new Showdown.converter();
 
 		this.showView = function () {
 	
@@ -168,12 +187,15 @@ jQuery.extend({
 
 		}
 
-		this.renderView = function () {
-
+		this.renderView = function (markdown) {
+			var html = me.converter.makeHtml(markdown);
+			jQuery('#wysiwym-output').html(html);
 		}
 
-		this.showEditor = function () {
-
+		this.showEditor = function (rawMarkdown) {
+			var editor = new jQuery.Editor(rawMarkdown);
+			editor.prependTo(jQuery('body'));
+			this.editor = editor;
 		}
 
 		this.destroyEditor = function () {
@@ -188,7 +210,7 @@ jQuery.extend({
 			});
 
 			placeholder.append(editButton);
-			placeholder.append('<div id="wysiwym-output" class="wysiwym-output" >');
+			placeholder.append('<div id="wysiwym-output" >');
 			return placeholder;	
 		}
 
@@ -224,7 +246,7 @@ jQuery.extend({
 		
 		var vlist = jQuery.ViewListener({
 			editClicked : function () {
-
+				view.showEditor(me.model.rawMarkdown);
 			},
 			cancelClicked : function () {
 
@@ -239,10 +261,18 @@ jQuery.extend({
 		var me = this;
 		this.defaults = {
 			templateData : {},
-			rawMarkdown : ''
+			rawMarkdown : '## Wysiwym \n \n --- \n "what you see is what you mean"'
 		};
 
 		this.model = jQuery.extend({}, me.defaults, model);
+
+		var liquify = function (template, data){
+			var tmpl = Liquid.parse( template );
+			var content = tmpl.render( data );
+			return content;
+		}
+
+		view.renderView(liquify(me.model.rawMarkdown, me.model.templateData));
 	}
 		       
 });
