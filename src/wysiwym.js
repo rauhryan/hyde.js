@@ -131,7 +131,20 @@ jQuery.extend({
 	          	var previewDiv = document.createElement("div");
 			$j(previewDiv).addClass('wysiwym-preview');
            		form.appendChild(previewDiv);
-	    	
+
+			var cancelButton = jQuery('<a href="#" class="wysiwym-button" ><span>Cancel</span></a>')
+				.click(function () {
+					me.notifyCancelClicked();
+				});
+
+			form.appendChild(cancelButton[0]);
+
+			var saveButton = jQuery('<a href="#" class="wysiwym-button" ><span>Save</span></a>')
+				.click(function () {
+					me.notifySaveClicked(textarea.value);
+				});
+
+			form.appendChild(saveButton[0]);
 		
 			me.form = $j(form);	
 
@@ -146,9 +159,9 @@ jQuery.extend({
         
         	   	//  build the editor and tell it to refresh the preview after commands 
        		     	var editor = new Attacklab.wmd.editor(jQuery('.wysiwym-textarea')[0],previewManager.refresh);
-			this.editor = editor;
-			this.previewManager = previewManager;
-			this.dom = element;
+			me.editor = editor;
+			me.previewManager = previewManager;
+			me.dom = element;
         	}
 
 		this.destroy = function (){
@@ -161,6 +174,18 @@ jQuery.extend({
 			var dom = createDom();
 			$element.prepend(dom);
 			wireUpEditor(dom);
+		}
+
+		this.notifyCancelClicked = function () {
+			jQuery.each(listeners, function (i) {
+				listeners[i].cancelClicked();
+			});
+		}
+
+		this.notifySaveClicked = function (newMarkdown) {
+			jQuery.each(listeners, function (i) {
+				listeners[i].saveClicked(newMarkdown);
+			});
 		}
 
 	},
@@ -176,14 +201,16 @@ jQuery.extend({
 		this.converter = new Showdown.converter();
 
 		this.showView = function () {
+			jQuery('#wysiwym-output-placeholder').show();
 	
 		}
 
 		this.hideView = function () {
-
+			jQuery('#wysiwym-output-placeholder').hide();
 		}
 
 		this.destroyView = function () {
+			jQuery('#wysiwym-output').html('');
 
 		}
 
@@ -195,11 +222,14 @@ jQuery.extend({
 		this.showEditor = function (rawMarkdown) {
 			var editor = new jQuery.Editor(rawMarkdown);
 			editor.prependTo(jQuery('body'));
+			jQuery.each(listeners, function (i) {
+				editor.addListener(listeners[i]);
+			});
 			this.editor = editor;
 		}
 
 		this.destroyEditor = function () {
-
+			me.editor.destroy();
 		}
 
 		var createDom = function () {
@@ -246,13 +276,19 @@ jQuery.extend({
 		
 		var vlist = jQuery.ViewListener({
 			editClicked : function () {
+				view.hideView();
 				view.showEditor(me.model.rawMarkdown);
 			},
 			cancelClicked : function () {
-
+				view.destroyEditor();
+				view.showView();
 			},
-			saveClicked : function () {
-
+			saveClicked : function (newMarkdown) {
+				me.model.rawMarkdown = newMarkdown;
+				view.destroyEditor();
+				view.destroyView();
+				view.renderView(liquify(me.model.rawMarkdown, me.model.templateData));
+				view.showView();
 			}
 		});
 		
