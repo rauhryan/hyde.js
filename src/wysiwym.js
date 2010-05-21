@@ -26,10 +26,6 @@ jQuery.extend({
 			textarea.value = rawMarkdown;
    			jQuery(textarea).addClass('wysiwym-textarea');
            		form.appendChild(textarea);
-	          	var previewDiv = document.createElement("div");
-			jQuery(previewDiv).addClass('wysiwym-preview');
-           		form.appendChild(previewDiv);
-
 			var cancelButton = jQuery('<a href="#" class="wysiwym-button" ><span>Cancel</span></a>')
 				.click(function () {
 					me.notifyCancelClicked();
@@ -43,6 +39,11 @@ jQuery.extend({
 				});
 
 			form.appendChild(saveButton[0]);
+	          	var previewDiv = document.createElement("div");
+			jQuery(previewDiv).addClass('wysiwym-preview');
+           		form.appendChild(previewDiv);
+
+		
 		
 			me.form = jQuery(form);	
 
