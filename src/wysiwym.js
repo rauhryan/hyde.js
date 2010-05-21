@@ -1,110 +1,8 @@
 wmd_options = { autostart: false };
-/*
-var Wysiwym = function () {
-	var me = this;
-	var checkLoaded = function () {
-		return (Attacklab && Attacklab.wmd);
-	}
-	this.instances = [];
 
-	 var createInstance = function (rawMarkdown) {
-		if(!checkLoaded()){
-			return;
-		}
-	
-		var form = $j('<form id="wysiwym-form" >');
-		var textarea = $j('<textarea class="wysiwym-textarea" >');
-		textarea.html(rawMarkdown);
-		form.append(textarea);
-
-		var preview = $j('<div class="wysiwym-preview" >');
-		form.append(preview);
-		var panes = {input:textarea[0], preview:preview[0], output:null};
-		var previewManager = new Attacklab.wmd.previewManager(panes);
-
-		var editor = new Attacklab.wmd.editor(textarea[0], previewManager.refresh);
-
-		instances.push({Form: form, Editor: editor, PreviewManager: previewManager});
-		return form;				
-	}
-	var createDom = function (rawMarkdown) {
-		// build the dom elements
-		var form = document.createElement("form");
-		$j(form).attr('id','wysiwym-form');
-		var textarea = document.createElement("textarea");
-		textarea.value = rawMarkdown;
-   		$j(textarea).addClass('wysiwym-textarea');
-           	form.appendChild(textarea);
-          	 var previewDiv = document.createElement("div");
-	   	$j(previewDiv).addClass('wysiwym-preview');
-           	form.appendChild(previewDiv);
-	    	
-		
-		me.form = $j(form);	
-
-	    	return me.form;
-		
-	}
-	var destroyInstance = function () {
-		var instance = me.instances.pop();
-
-		if(instance) {
-			instance.Editor.destroy();
-			instance.PreviewManager.destroy();
-			instance.Form.remove();
-		}
-
-	}
-	// Public so you can override it 
-	this.appendToBody = function (form){
-		$j('body').prepend(form);
-		
-		var button = $j('<a href="#open" class="minibutton" ><span>Open</span></a>');
-		button.bind({
-			focus: function () {		
-				jQuery(this).addClass('mousedown');
-			},
-			blur: function () {
-				jQuery(this).removeClass('mousedown');
-			},
-			mouseup: function () {
-				jQuery(this).removeClass('mousedown');
-			}
-
-		});
-
-		button.click(function () {
-					me.form.toggle();
-				});
-
-		me.form.before(button);
-	}	
-
-	var loadEditor = function (rawMarkdown){
-		//var instance = createInstance(rawMarkdown);
-		var instance = createDom(rawMarkdown);
-		me.appendToBody(instance);
-		
-		// build the preview manage
-            	var panes = {input:$j('.wysiwym-textarea')[0], preview:$j('.wysiwym-preview')[0], output:null};
-            	var previewManager = new Attacklab.wmd.previewManager(panes);
-        
-           	//  build the editor and tell it to refresh the preview after commands 
-            	var editor = new Attacklab.wmd.editor($j('.wysiwym-textarea')[0],previewManager.refresh);
-        
-            	// save everything so we can destroy it all later
-            	me.instances.push({Form:$j('#wysiwym-form')[0], Editor:editor, PreviewManager:previewManager});
-	}
-	return {
-		 create : loadEditor,
-		 destroy : destroyInstance
-	}
-}
-*/
-
-$j(function () {
-	var view = new $j.View($j('body'));
-	var controller = new $j.Controller(view, {});
+jQuery(function () {
+	var view = new jQuery.View(jQuery('body'));
+	var controller = new jQuery.Controller(view, {});
 });
 
 jQuery.extend({
@@ -123,13 +21,13 @@ jQuery.extend({
 		var createDom = function (markdown) {
 			// build the dom elements
 			var form = document.createElement("form");
-			$j(form).attr('id','wysiwym-form');
+			jQuery(form).attr('id','wysiwym-form');
 			var textarea = document.createElement("textarea");
 			textarea.value = rawMarkdown;
-   			$j(textarea).addClass('wysiwym-textarea');
+   			jQuery(textarea).addClass('wysiwym-textarea');
            		form.appendChild(textarea);
 	          	var previewDiv = document.createElement("div");
-			$j(previewDiv).addClass('wysiwym-preview');
+			jQuery(previewDiv).addClass('wysiwym-preview');
            		form.appendChild(previewDiv);
 
 			var cancelButton = jQuery('<a href="#" class="wysiwym-button" ><span>Cancel</span></a>')
@@ -146,7 +44,7 @@ jQuery.extend({
 
 			form.appendChild(saveButton[0]);
 		
-			me.form = $j(form);	
+			me.form = jQuery(form);	
 
 	    		return me.form;
 		}
@@ -296,8 +194,8 @@ jQuery.extend({
 
 		var me = this;
 		this.defaults = {
-			templateData : {},
-			rawMarkdown : '## Wysiwym \n \n --- \n "what you see is what you mean"'
+			templateData : {title: 'Wysiwym', description: '"what you see is what you mean"'},
+			rawMarkdown : '## {{ title }} \n \n --- \n {{ description }}'
 		};
 
 		this.model = jQuery.extend({}, me.defaults, model);
